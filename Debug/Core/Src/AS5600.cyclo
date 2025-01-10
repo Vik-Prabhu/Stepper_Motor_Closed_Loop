@@ -1,0 +1,2 @@
+../Core/Src/AS5600.c:14:6:AS5600_Init	1
+../Core/Src/AS5600.c:18:7:AS5600_ReadCorrectedAngle	1

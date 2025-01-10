@@ -1,0 +1,4 @@
+../Core/Src/Stepper_Driver.c:22:6:MotorControl_Init	16	static
+../Core/Src/Stepper_Driver.c:28:6:MotorControl_Update	48	static
+../Core/Src/Stepper_Driver.c:56:6:TIM2_PWM_Config	16	static
+../Core/Src/Stepper_Driver.c:67:6:TIM2_IRQHandler	4	static
