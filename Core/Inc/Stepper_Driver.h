@@ -12,9 +12,9 @@
 #include "stm32f4xx_hal.h"
 
 // PID parameters
-#define KP 5.1f
+#define KP 2.0f
 #define KI 0.055f
-#define KD 0.7f
+#define KD 0.9f
 #define STEPS_PER_REVOLUTION 400
 #define ERROR_THRESHOLD 1.0f
 

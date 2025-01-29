@@ -78,8 +78,9 @@ void MotorControl_Update(float angle , I2C_HandleTypeDef *hi2c , TIM_HandleTypeD
         if (fabs(angleError) > ERROR_THRESHOLD  && sensor_hi2c == &hi2c1 ) {
             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, (stepsToMove > 0) ? GPIO_PIN_SET : GPIO_PIN_RESET);
             TIM2 -> CCR3 = 0;
+            TIM2 -> CCR1 = 0;
             HAL_TIM_PWM_Start(motor_htim, TIM_CHANNEL_1);
-            TIM2 -> CCR1 = 500;
+            TIM5 -> CCR1 = 1000;
             printf("Corrected Angle1: %.2f, Steps to Move1: %d\n", correctedAngle, stepsToMove);
             HAL_Delay(1);
         }
@@ -88,11 +89,24 @@ void MotorControl_Update(float angle , I2C_HandleTypeDef *hi2c , TIM_HandleTypeD
         {
         	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, (stepsToMove > 0) ? GPIO_PIN_SET : GPIO_PIN_RESET);
             TIM2 -> CCR1 = 0;
+            TIM5 -> CCR1 = 0;
         	HAL_TIM_PWM_Start(motor_htim, TIM_CHANNEL_3);
-        	TIM2 -> CCR3 = 500;
+        	TIM2 -> CCR3 = 5000;
         	printf("Corrected Angle2: %.2f, Steps to Move2: %d\n", correctedAngle, stepsToMove);
         	HAL_Delay(1);
         }
+
+        if (fabs(angleError) > ERROR_THRESHOLD && sensor_hi2c == &hi2c3 )
+        {
+        	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, (stepsToMove > 0) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+            TIM2 -> CCR1 = 0;
+            TIM5 -> CCR1 = 0;
+        	HAL_TIM_PWM_Start(motor_htim, TIM_CHANNEL_3);
+        	TIM2 -> CCR1 = 5000;
+        	printf("Corrected Angle3: %.2f, Steps to Move3: %d\n", correctedAngle, stepsToMove);
+        	HAL_Delay(1);
+        }
+        TIM5 -> CCR1 = 0;
         TIM2 -> CCR1 = 0;
         TIM2 -> CCR3 = 0;
 
@@ -102,28 +116,31 @@ void MotorControl_Update(float angle , I2C_HandleTypeDef *hi2c , TIM_HandleTypeD
 
     }
 }
+/*
+ * OLD CODE WITH
+void TIM5_IRQHandler(void) {
+    if (__HAL_TIM_GET_FLAG(motor_htim, TIM_FLAG_UPDATE) != RESET) {
+        if (__HAL_TIM_GET_IT_SOURCE(motor_htim, TIM_IT_UPDATE) != RESET) {
+            __HAL_TIM_CLEAR_IT(motor_htim, TIM_IT_UPDATE);
+            pulse_counter++;
+            if (pulse_counter >= target_pulse_count) {
+            	TIM2->CCR3 = 0;
+            }
+        }
+    }
+}
 
-//void TIM5_IRQHandler(void) {
-//    if (__HAL_TIM_GET_FLAG(motor_htim, TIM_FLAG_UPDATE) != RESET) {
-//        if (__HAL_TIM_GET_IT_SOURCE(motor_htim, TIM_IT_UPDATE) != RESET) {
-//            __HAL_TIM_CLEAR_IT(motor_htim, TIM_IT_UPDATE);
-//            pulse_counter++;
-//            if (pulse_counter >= target_pulse_count) {
-//            	TIM2->CCR3 = 0;
-//            }
-//        }
-//    }
-//}
-//
-//void TIM2_IRQHandler(void) {
-//    if (__HAL_TIM_GET_FLAG(motor_htim, TIM_FLAG_UPDATE) != RESET) {
-//        if (__HAL_TIM_GET_IT_SOURCE(motor_htim, TIM_IT_UPDATE) != RESET) {
-//            __HAL_TIM_CLEAR_IT(motor_htim, TIM_IT_UPDATE);
-//            pulse_counter++;
-//            if (pulse_counter >= target_pulse_count) {
-//            	TIM2->CCR1 = 0;
-//            }
-//        }
-//    }
-//}
+void TIM2_IRQHandler(void) {
+    if (__HAL_TIM_GET_FLAG(motor_htim, TIM_FLAG_UPDATE) != RESET) {
+        if (__HAL_TIM_GET_IT_SOURCE(motor_htim, TIM_IT_UPDATE) != RESET) {
+            __HAL_TIM_CLEAR_IT(motor_htim, TIM_IT_UPDATE);
+            pulse_counter++;
+            if (pulse_counter >= target_pulse_count) {
+            	TIM2->CCR1 = 0;
+            }
+        }
+    }
+}
+*/
+
 
