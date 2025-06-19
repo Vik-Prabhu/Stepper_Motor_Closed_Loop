@@ -18,7 +18,16 @@
 #define STEPS_PER_REVOLUTION 400
 #define ERROR_THRESHOLD 1.0f
 
+typedef struct {
+    float angle;
+    I2C_HandleTypeDef *hi2c;
+    TIM_HandleTypeDef *htim;
+} Motorparams;
+
+
+
 float AS5600_ReadCorrectedAngle(I2C_HandleTypeDef *hi2c);
-void MotorControl_Update(float angle , I2C_HandleTypeDef *hi2c, TIM_HandleTypeDef *htim );
+void MotorControl_Update(Motorparams *params);
+
 
 #endif /* INC_STEPPER_DRIVER_H_ */

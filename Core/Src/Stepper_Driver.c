@@ -16,7 +16,6 @@ volatile uint32_t target_pulse_count = 0;
 static float integral = 0;
 static float previousError = 0;
 static float targetAngle = 0;
-static uint32_t lastStepperMoveTime = 0;
 static uint32_t lastStepperMoveTime1 = 0;
 static uint32_t lastStepperMoveTime2 = 0;
 
@@ -25,7 +24,7 @@ extern TIM_HandleTypeDef htim2;
 
 extern I2C_HandleTypeDef hi2c1;
 extern I2C_HandleTypeDef hi2c2;
-
+extern I2C_HandleTypeDef hi2c3;
 
 
 #include <math.h>
@@ -52,15 +51,15 @@ float AS5600_ReadCorrectedAngle(I2C_HandleTypeDef *hi2c) {
     return degAngle;
 }
 
-void MotorControl_Update(float angle , I2C_HandleTypeDef *hi2c , TIM_HandleTypeDef *htim) {
-    sensor_hi2c = hi2c;
-    motor_htim = htim;
+void MotorControl_Update(Motorparams *params) {
+    sensor_hi2c = params->hi2c;
+    motor_htim = params->htim;
     HAL_TIM_Base_Start(motor_htim);
     uint32_t currentMillis = HAL_GetTick();
-    float correctedAngle = AS5600_ReadCorrectedAngle(hi2c);
-    targetAngle = angle;
+    float correctedAngle = AS5600_ReadCorrectedAngle(params->hi2c);
+    targetAngle = params->angle;
 
-    uint32_t *lastStepperMoveTime = (hi2c == &hi2c1) ? &lastStepperMoveTime1 : &lastStepperMoveTime2;
+    uint32_t *lastStepperMoveTime = (sensor_hi2c == &hi2c1) ? &lastStepperMoveTime1 : &lastStepperMoveTime2;
 
     if (currentMillis - *lastStepperMoveTime >= 10) {
         *lastStepperMoveTime = currentMillis;

@@ -48,6 +48,7 @@ I2C_HandleTypeDef hi2c3;
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim5;
 
+UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart6;
 
 /* USER CODE BEGIN PV */
@@ -63,6 +64,7 @@ static void MX_TIM5_Init(void);
 static void MX_I2C2_Init(void);
 static void MX_USART6_UART_Init(void);
 static void MX_I2C3_Init(void);
+static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 int _write(int file, char *ptr, int len) {
 	(void) file;
@@ -73,6 +75,10 @@ int _write(int file, char *ptr, int len) {
 	}
 	return len;
 }
+
+Motorparams dof1 = {180, &hi2c1, &htim2};
+Motorparams dof2 = {180, &hi2c2, &htim2};
+Motorparams dof3 = {180, &hi2c3, &htim5};
 
 /* USER CODE END PFP */
 
@@ -116,17 +122,19 @@ int main(void)
   MX_I2C2_Init();
   MX_USART6_UART_Init();
   MX_I2C3_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1) {
-	MotorControl_Update(180 , &hi2c2 , &htim2); //TIM2->CCR3 STEPPER 2
-	HAL_Delay(1);
-	MotorControl_Update(180 , &hi2c3 , &htim2); //TIM2->CCR1 STEPPER 3
-	HAL_Delay(1);
-	MotorControl_Update(180 , &hi2c1 , &htim5);	//TIM5->CCR1 STEPPER 1
+//MotorControl_Update Function is used to activate the closed loop control for the particular dof in its parameter
+//	MotorControl_Update(&dof1); //TIM2->CCR3 STEPPER 2
+//	HAL_Delay(1);
+//	MotorControl_Update(&dof2); //TIM2->CCR1 STEPPER 3
+//	HAL_Delay(1);
+//	MotorControl_Update(&dof3);	//TIM5->CCR1 STEPPER 1
 
 /* OPEN LOOP CODE BEGIN
 //	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET );
@@ -135,16 +143,15 @@ int main(void)
  * OPEN LOOP CODE END
  */
 
-/* AS5600 TEST CODE BEGIN
-//	float angle = AS5600_ReadCorrectedAngle(&hi2c1);
-//	        if (angle >= 0) {
-//	            printf("Angle: %.2f°\n", angle);
-//	        } else {
-//	            printf("AS5600 Read Error!\n");
-//	        }
-//	HAL_Delay(500);  // Read every 500ms
- * AS5600 TEST CODE END
- */
+/* AS5600 TEST CODE BEGIN */
+	float angle = AS5600_ReadCorrectedAngle(&hi2c1);
+	        if (angle >= 0) {
+	            printf("Angle: %.2f°\n", angle);
+	        } else {
+	            printf("AS5600 Read Error!\n");
+	        }
+	HAL_Delay(500);  // Read every 500ms
+ /* AS5600 TEST CODE END */
 
     /* USER CODE END WHILE */
 
@@ -420,6 +427,39 @@ static void MX_TIM5_Init(void)
 
   /* USER CODE END TIM5_Init 2 */
   HAL_TIM_MspPostInit(&htim5);
+
+}
+
+/**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 115200;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_HalfDuplex_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
 
 }
 

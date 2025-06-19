@@ -1,2 +1,2 @@
-../Core/Src/Stepper_Driver.c:37:7:AS5600_ReadCorrectedAngle	56	static
-../Core/Src/Stepper_Driver.c:55:6:MotorControl_Update	64	static
+../Core/Src/Stepper_Driver.c:36:7:AS5600_ReadCorrectedAngle	56	static
+../Core/Src/Stepper_Driver.c:54:6:MotorControl_Update	56	static
